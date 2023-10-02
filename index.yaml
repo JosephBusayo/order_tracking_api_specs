@@ -1,0 +1,106 @@
+openapi: "3.0.0"
+info:
+    version: "1.0.0"
+    title: "TEAM CALLIBAN ORDER TRACKING API"
+    description: Enspoints show users transaction history and all related data
+
+paths:
+    /transactions/all/{user_id}:
+        parameters:
+            - name: user_id
+              description: The unique identifier of the user
+              in: path
+              required: true
+              schema:
+                  $ref: "#/components/schemas/SpacecraftId"
+        get:
+            summary: SHOW USER'S TRANSACTIONS HISTORY
+            responses:
+                "200":
+                    description: The transaction history corresponding to the user with the provided `user_id`
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Spacecraft"
+                404:
+                    description: No transaction found for the user with the provided `user_id`
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Error"
+                500:
+                    description: Unexpected error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Error"
+    /transactions/pending/{user_id}:
+        parameters:
+            - name: user_id
+              description: The unique identifier of the user
+              in: path
+              required: true
+              schema:
+                  $ref: "#/components/schemas/SpacecraftId"
+        get:
+            summary: SHOW THE USERS PENDING TRANSACTIONS
+            responses:
+                "200":
+                    description: The pending transaction(s) corresponding to the user with the provided `user_id`
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Spacecraft"
+                404:
+                    description: No pending transaction found for the user with the provided `user_id`
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Error"
+                500:
+                    description: Unexpected error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Error"
+components:
+    schemas:
+        SpacecraftId:
+            description: The unique identifier of a spacecraft
+            type: string
+        Spacecraft:
+            type: object
+            required:
+                - id
+                - name
+                - type
+            properties:
+                id:
+                    $ref: "#/components/schemas/SpacecraftId"
+                name:
+                    type: string
+                type:
+                    type: string
+                    enum:
+                        - capsule
+                        - probe
+                        - satellite
+                        - spaceplane
+                        - station
+                description:
+                    type: string
+        Error:
+            type: object
+            required:
+                - message
+            properties:
+                message:
+                    description: A human readable error message
+                    type: string
+    securitySchemes:
+        ApiKey:
+            type: apiKey
+            in: header
+            name: X-Api-Key
+security:
+    - ApiKey: []
